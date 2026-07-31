@@ -1,0 +1,10 @@
+{
+  "name": "fahcel-sequencer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "FahCel cold-chain outreach email sequencing on Resend — scheduler, reply/click webhooks, unsubscribe.",
+  "dependencies": {
+    "postgres": "^3.4.5"
+  }
+}
