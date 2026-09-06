@@ -50,6 +50,15 @@ create table if not exists events (
 
 create index if not exists events_lead_idx on events (lead_id, created_at desc);
 
+-- Cursor tail (/api/events/since): `id > cursor order by id asc`. The bigserial
+-- primary key already indexes id — this is a no-op on a healthy table, and only
+-- matters on a database whose events table predates that primary key.
+create index if not exists events_id_idx on events (id);
+
+-- Correlating each `sent` event with the delivered/opened/clicked/bounced rows
+-- Resend reports later for the same message (/api/leads → sent_events).
+create index if not exists events_resend_idx on events (resend_id) where resend_id is not null;
+
 -- Self-healing: guarantee the unique index the capture-lead / enroll upsert
 -- targets, even on databases whose `leads` table predates the `unique` above
 -- (create table if not exists would have skipped the inline constraint).

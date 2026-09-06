@@ -57,7 +57,9 @@ export default async function handler(req, res) {
             { name: 'step', value: stepId },
           ],
         });
-        await logEvent({ leadId: lead.id, enrollmentId: en.id, email: en.email, type: 'sent', meta: { step: stepId }, resendId: sent.id });
+        // `source: 'sequence'` distinguishes this from api/send.js's manual sends.
+        // Readers treat a missing meta.source as 'sequence' so older rows still work.
+        await logEvent({ leadId: lead.id, enrollmentId: en.id, email: en.email, type: 'sent', meta: { step: stepId, subject, text, source: 'sequence' }, resendId: sent.id });
 
         // Advance: compute the next step's due time, or complete.
         const nextIndex = en.step_index + 1;
@@ -70,7 +72,7 @@ export default async function handler(req, res) {
         results.push({ email: en.email, step: stepId, ok: true });
       } catch (err) {
         // Leave it active and due — the next tick retries. Log the failure.
-        await logEvent({ leadId: lead.id, enrollmentId: en.id, email: en.email, type: 'send_failed', meta: { step: stepId, error: String(err).slice(0, 300) } });
+        await logEvent({ leadId: lead.id, enrollmentId: en.id, email: en.email, type: 'send_failed', meta: { step: stepId, source: 'sequence', error: String(err).slice(0, 300) } });
         results.push({ email: en.email, step: stepId, ok: false, error: String(err).slice(0, 200) });
       }
     }
