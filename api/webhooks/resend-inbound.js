@@ -3,7 +3,7 @@
 //
 // Setup (see README): in Resend → Webhooks, add an endpoint pointing here with
 // the event type `email.received`, and add the MX record for your receiving
-// subdomain (e.g. reply.fahcel.co). Set REPLY_TO to an address on that subdomain.
+// subdomain (e.g. reply.fahcel.eu). Set REPLY_TO to an address on that subdomain.
 //
 // Node.js classic (req, res) handler. bodyParser disabled for signature checks.
 import { findLeadByEmail, stopEnrollmentsForEmail, logEvent } from '../../lib/db.js';
@@ -12,7 +12,7 @@ import { sendEmail } from '../../lib/resend.js';
 
 export const config = { runtime: 'nodejs', api: { bodyParser: false } };
 
-const OUTLOOK = process.env.FORWARD_TO || 'sales@fahcel.co';
+const OUTLOOK = process.env.FORWARD_TO || 'sales@fahcel.eu';
 
 async function readRawBody(req) {
   if (typeof req.body === 'string') return req.body;

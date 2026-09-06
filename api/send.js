@@ -56,7 +56,7 @@ export default async function handler(req, res) {
     // `from` and reply-to from the dashboard are ignored in favour of the
     // server's verified FROM_EMAIL / REPLY_TO, so nobody can spoof them through
     // this open endpoint — and replies always route through the receiving
-    // subdomain (mail.fahcel.co) so the inbound webhook fires. Set REPLY_TO
+    // subdomain (fahcel.eu) so the inbound webhook fires. Set REPLY_TO
     // in Vercel; it is the single source of truth.
     let result;
     try {

@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   } catch {}
 
   if (!email || !email.includes('@')) {
-    sendHtml(res, "That unsubscribe link looks invalid. Email sales@fahcel.co and we'll remove you by hand.", 400);
+    sendHtml(res, "That unsubscribe link looks invalid. Email sales@fahcel.eu and we'll remove you by hand.", 400);
     return;
   }
 
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     await logEvent({ leadId: lead ? lead.id : null, email, type: 'unsubscribed', meta: { source: 'link' } });
     sendHtml(res, `You're unsubscribed. <b>${escapeHtml(email)}</b> won't receive any further outreach from FahCel.`);
   } catch (err) {
-    sendHtml(res, "Something went wrong unsubscribing you. Email sales@fahcel.co and we'll remove you by hand.", 500);
+    sendHtml(res, "Something went wrong unsubscribing you. Email sales@fahcel.eu and we'll remove you by hand.", 500);
   }
 }
 

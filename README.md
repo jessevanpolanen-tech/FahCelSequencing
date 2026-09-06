@@ -69,10 +69,10 @@ vercel --prod
 |---|---|
 | `RESEND_API_KEY` | your Resend key (`re_...`) |
 | `POSTGRES_URL` | Supabase **Transaction-pooler** string (`...pooler.supabase.com:6543/postgres`); auto-set by Vercel Postgres |
-| `FROM_EMAIL` | `sales@mail.fahcel.co` *(your verified sending subdomain)* |
+| `FROM_EMAIL` | `sales@fahcel.eu` *(your verified sending subdomain)* |
 | `FROM_NAME` | `FahCel` |
 | `REPLY_TO` | address on your **receiving** subdomain *(see step 5 — must be inbound for reply-detection)* |
-| `FORWARD_TO` | `sales@fahcel.co` (your real inbox) |
+| `FORWARD_TO` | `sales@fahcel.eu` (your real inbox) |
 | `CRON_SECRET` | any long random string |
 | `RESEND_WEBHOOK_SECRET_EVENTS` | signing secret of the **events** webhook (`whsec_…`) |
 | `RESEND_WEBHOOK_SECRET_INBOUND` | signing secret of the **inbound** webhook (`whsec_…`) |
@@ -92,21 +92,21 @@ Then turn **ON open & click tracking** in Resend settings.
 So a reply stops the sequence *and* still reaches your inbox, replies must route
 through Resend Inbound, not straight to your mailbox.
 
-1. **Pick a receiving subdomain** — use a *new* one, e.g. `reply.fahcel.co`
+1. **Pick a receiving subdomain** — use a *new* one, e.g. `reply.fahcel.eu`
    (don't reuse your sending subdomain; keep sending vs receiving separate).
-2. **Add the MX record.** Resend → **Emails → Receiving** → add `reply.fahcel.co`
+2. **Add the MX record.** Resend → **Emails → Receiving** → add `reply.fahcel.eu`
    → add the **MX record** it gives you at your DNS provider. Wait for it to verify.
 3. **Add the inbound webhook.** Resend → **Webhooks → Add** →
    URL `https://your-app.vercel.app/api/webhooks/resend-inbound`, event type
    **`email.received`**. Copy its signing secret into `RESEND_WEBHOOK_SECRET_INBOUND`.
-4. **Point Reply-To at it:** set `REPLY_TO=sales@reply.fahcel.co`.
+4. **Point Reply-To at it:** set `REPLY_TO=sales@reply.fahcel.eu`.
 
-Flow: lead replies → mail hits `…@reply.fahcel.co` → Resend Inbound → our webhook
+Flow: lead replies → mail hits `…@reply.fahcel.eu` → Resend Inbound → our webhook
 **stops their sequence** and **forwards the message to your `FORWARD_TO` inbox** with
 Reply-To set to the lead, so you answer normally.
 
 If you skip this whole step, sending + sequences still work — set
-`REPLY_TO=sales@fahcel.co` and watch replies by hand (sequences won't auto-stop).
+`REPLY_TO=sales@fahcel.eu` and watch replies by hand (sequences won't auto-stop).
 
 ### 6. Test
 ```bash
@@ -129,7 +129,7 @@ You should receive step 0. Reply to it → you get the forward and the sequence 
 
 ## Safety notes
 - **Sending domain:** everything goes out on your sending subdomain (e.g.
-  `mail.fahcel.co`), so cold-outreach reputation never touches your root domain
+  `fahcel.eu`), so cold-outreach reputation never touches your root domain
   or your main inbox.
 - **Compliance:** every email carries a working one-click unsubscribe. Keep volume
   sane and only email people with a plausible reason to hear from you.
