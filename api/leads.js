@@ -47,10 +47,12 @@ export default async function handler(req, res) {
   try {
     const tenant = (req.query?.tenant || DEFAULT_TENANT).toString().trim().toLowerCase();
 
-    // The cursor is read alongside the leads, so anything that lands after this
-    // read is picked up by the client's first /api/events/since call.
-    const [rows, cursorRows] = await Promise.all([
-      sql`
+    // Sequential, NOT Promise.all. lib/db.js runs max: 1 against Supabase's
+    // transaction-mode pooler (6543); two queries issued concurrently get
+    // pipelined onto that single pgbouncer-backed connection and wedge it —
+    // the instance then hangs every later request with no error. One query at
+    // a time is the only safe shape here.
+    const rows = await sql`
       select
         l.id, l.email, l.name, l.org, l.role, l.created_at, l.tenant,
         e.sequence_id, e.step_index, e.status, e.next_due_at, e.enrolled_at,
@@ -135,9 +137,10 @@ export default async function handler(req, res) {
 
       where l.tenant = ${tenant}
       order by l.created_at desc
-      limit 500;`,
-      sql`select coalesce(max(id), 0)::text as cursor from events;`,
-    ]);
+      limit 500;`;
+    // Read after the leads, so anything that lands in between is picked up by
+    // the client's first /api/events/since call rather than being skipped.
+    const cursorRows = await sql`select coalesce(max(id), 0)::text as cursor from events;`;
 
     res.status(200).json({ cursor: cursorRows[0].cursor, leads: rows, tenant });
   } catch (err) {
